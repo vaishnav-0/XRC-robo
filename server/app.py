@@ -9,6 +9,8 @@ from flask import Flask, jsonify, request, Response, send_from_directory
 #from control  import forward, backward, rotate1, rotate2, cleanup, stop
 from transport import Transport
 
+STREAMING = False
+
 app = Flask(__name__)
 
 def find_free_port():
@@ -76,7 +78,8 @@ if __name__ == "__main__":
     # Start the main server
     #stream = RealsenseStream(lambda a:print(a))
     try:
-        Popen(['python3', 'websocket_con.py', str(11324)],stdout=sys.stdout, stderr=sys.stderr)
+        if STREAMING:
+            Popen(['python3', 'websocket_con.py', str(11324)],stdout=sys.stdout, stderr=sys.stderr)
         app.run(port=8080, host='0.0.0.0')
         #stream = RealsenseStream(lambda a:print(a))
         #stream.start_stream()
