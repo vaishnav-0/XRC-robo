@@ -1,16 +1,20 @@
 class Transporter {
 
     private ws!: WebSocket;
+    private onMessageCB: (data: Blob, f: boolean) => void;
+    private flag: boolean;
 
-    constructor() {
+    constructor(onMessageCB: (data: Blob, f: boolean) => void) {
 
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
-
+        this.flag = false;
+        this.onMessageCB = onMessageCB;
         this.ws = new WebSocket(`ws://${window.location.hostname}:${11324}`);
         this.ws.onopen = () => this.start();
         this.ws.onmessage = ({ data }) => this.onMessage(data);
-        this.ws.onclose = ()=>console.log("disconnected")
+        this.ws.onclose = () => console.log("disconnected")
+
     }
 
     private async start() {
@@ -20,10 +24,10 @@ class Transporter {
     }
 
     private async onMessage(data: Blob | string) {
-        console.log(data)
-        // if (this.onResult && typeof data !== "string")
-        //     this.onResult(await createImageBitmap(data));
-
+        if (this.onMessageCB && typeof data !== "string"){
+            this.flag=!this.flag;
+            this.onMessageCB(data, this.flag);
+        }
     }
 
 

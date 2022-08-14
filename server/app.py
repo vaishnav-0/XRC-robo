@@ -1,23 +1,38 @@
-from distutils.log import debug
 import sys
-import socket
-from time import sleep
 from subprocess import Popen
-import asyncio
 from contextlib import closing
 from flask import Flask, jsonify, request, Response, send_from_directory
 #from control  import forward, backward, rotate1, rotate2, cleanup, stop
-from transport import Transport
+from flask_jwt_extended import create_access_token, \
+create_refresh_token, set_access_cookies, set_refresh_cookies
 
 app = Flask(__name__)
 
-def find_free_port():
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(('', 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        return s.getsockname()[1]
+# def find_free_port():
+#     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+#         s.bind(('', 0))
+#         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+#         return s.getsockname()[1]
 
+username="admin"
+password="nimda"
 
+@app.route('/login', methods=('POST',))
+def login():
+  data = request.get_json()
+  uname = data['username']
+  passwd = data['password']
+  user = username == uname and password == passwd
+  if user:
+    access_token = create_access_token(identity=user.user_id)
+    refresh_token = create_refresh_token(identity=user.user_id)
+
+    response = jsonify()
+    set_access_cookies(response, access_token)
+    set_refresh_cookies(response, refresh_token)
+    return response, 201
+  else:
+    return jsonify(message="Unauthorized"), 401
 
 @app.route("/", defaults=dict(filename=None))
 @app.route("/<path:filename>", methods=["GET"])
@@ -74,12 +89,10 @@ success_resp = Response("{'status':'success'}", status=200, mimetype='applicatio
 
 if __name__ == "__main__":
     # Start the main server
-    #stream = RealsenseStream(lambda a:print(a))
     try:
-        Popen(['python3', 'websocket_con.py', str(11324)],stdout=sys.stdout, stderr=sys.stderr)
+        web_proc = Popen(['python3', 'websocket_con.py', str(11324)],stdout=sys.stdout, stderr=sys.stderr)
         app.run(port=8080, host='0.0.0.0')
-        #stream = RealsenseStream(lambda a:print(a))
-        #stream.start_stream()
+
     finally:
-        pass#stream.stop_stream()
+        web_proc.terminate()
 
