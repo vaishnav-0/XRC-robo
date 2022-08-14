@@ -93,9 +93,10 @@ if __name__ == "__main__":
     # Start the main server
     try:
         if STREAMING:
-            Popen(['python3', 'websocket_con.py', str(11324)],stdout=sys.stdout, stderr=sys.stderr)
+            web_proc = Popen(['python3', 'websocket_con.py', str(11324)],stdout=sys.stdout, stderr=sys.stderr)
         app.run(port=8080, host='0.0.0.0')
 
     finally:
-        web_proc.terminate()
+        if STREAMING:
+            web_proc.terminate()
 
