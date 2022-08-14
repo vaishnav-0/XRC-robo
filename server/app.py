@@ -6,6 +6,8 @@ from flask import Flask, jsonify, request, Response, send_from_directory
 from flask_jwt_extended import create_access_token, \
 create_refresh_token, set_access_cookies, set_refresh_cookies
 
+STREAMING = False
+
 app = Flask(__name__)
 
 # def find_free_port():
@@ -90,7 +92,8 @@ success_resp = Response("{'status':'success'}", status=200, mimetype='applicatio
 if __name__ == "__main__":
     # Start the main server
     try:
-        web_proc = Popen(['python3', 'websocket_con.py', str(11324)],stdout=sys.stdout, stderr=sys.stderr)
+        if STREAMING:
+            Popen(['python3', 'websocket_con.py', str(11324)],stdout=sys.stdout, stderr=sys.stderr)
         app.run(port=8080, host='0.0.0.0')
 
     finally:
