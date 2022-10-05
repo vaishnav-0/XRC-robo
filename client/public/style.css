@@ -1,0 +1,40 @@
+.control-grid {
+  display: grid;
+  grid-template-columns: [col1] 50px [col2] 50px [col3] 50px [col4];
+  grid-template-rows: [row1] 50px [row2] 50px [row3] 50px [row4];
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+}
+
+.control-grid button{
+    background-color: black;
+    color: white;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    border: 0;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.control-btn-w {
+  grid-column: col2 / col3;
+  grid-row: row1 / row2;
+}
+.control-btn-s {
+  grid-column: col2 / col3;
+  grid-row: row3 / row4;
+}
+
+.control-btn-a {
+  grid-column: col1 / col2;
+  grid-row: row2 / row3;
+}
+
+.control-btn-d {
+  grid-column: col3 / col4;
+  grid-row: row2 / row3;
+}
+

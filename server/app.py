@@ -2,11 +2,11 @@ import sys
 from subprocess import Popen
 from contextlib import closing
 from flask import Flask, jsonify, request, Response, send_from_directory
-#from control  import forward, backward, rotate1, rotate2, cleanup, stop
+from control  import forward, backward, rotate1, rotate2, cleanup, set_speed, stop
 from flask_jwt_extended import create_access_token, \
 create_refresh_token, set_access_cookies, set_refresh_cookies
 
-STREAMING = False
+STREAMING = True
 
 app = Flask(__name__)
 
@@ -63,30 +63,38 @@ def index(filename):
 
 success_resp = Response("{'status':'success'}", status=200, mimetype='application/json')
 
-# @app.route('/control', methods = ['GET'])
-# def control():
-#     arg = request.args.get("mov")
-#     print(arg)
-#     if arg:
-#         if(arg == 'w'):
-#             forward()
-#             return success_resp
-#         elif (arg == 's'):
-#             backward()
-#             return success_resp
-#         elif (arg == 'a'):
-#             rotate1()
-#             return success_resp
-#         elif (arg == 'd'):
-#             rotate2()
-#             return success_resp
-#         elif(arg == 'br'):
-#             stop()
-#             return success_resp
-#         else:
-#             return Response("{'error':'Invalid command'}", status=400, mimetype='application/json')
-#     else:
-#         return Response("{'error':'Invalid command'}", status=400, mimetype='application/json')
+@app.route('/control', methods = ['GET'])
+def control():
+    arg = request.args.get("mov")
+    speed = request.args.get("speed")
+    print(arg)
+    if speed:
+        try:
+            set_speed(int(speed))
+            return success_resp
+        except Exception as e:
+            print(e)
+            return Response("{'error':'Invalid command'}", status=400, mimetype='application/json')
+    if arg:
+        if(arg == 'w'):
+            forward()
+            return success_resp
+        elif (arg == 's'):
+            backward()
+            return success_resp
+        elif (arg == 'a'):
+            rotate1()
+            return success_resp
+        elif (arg == 'd'):
+            rotate2()
+            return success_resp
+        elif(arg == 'br'):
+            stop()
+            return success_resp
+        else:
+            return Response("{'error':'Invalid command'}", status=400, mimetype='application/json')
+    else:
+        return Response("{'error':'Invalid command'}", status=400, mimetype='application/json')
 
 
 if __name__ == "__main__":

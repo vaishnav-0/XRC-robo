@@ -1,9 +1,6 @@
 import sys
-import cv2
-import os
+
 from stream import RealsenseStream
-import numpy as np
-import json
 from transport import Transport
 import asyncio  
 from queue import Queue
@@ -26,31 +23,35 @@ def stream_to_clients(queue1, queue2, event):
         try:
             data1 = queue1.get()
             data2 = queue2.get()
-            if(data1 and data2):
-                for ws in sockets:
-                    try:
-                        if(data1):
-                            loop.run_until_complete(ws.send(data1))
-                        loop.run_until_complete(ws.send(data2))
-                    except Exception as e:
-                        print(e)
 
-                    event.set()
-     
+            for ws in sockets:
+                try:
+                    loop.run_until_complete(ws.send(data1))
+                    loop.run_until_complete(ws.send(data2))
+                except Exception as e:
+                    print(e)
+                event.set()   
+
         except Exception as e:
             print(e)
             print(loop)
             
+def on_connect(ws):
+    sockets.append(ws)
+    if len(sockets) == 1:
+        print(event.is_set())
+        event.set()
 
 if __name__ == "__main__":
     print("SUBPROCESS_READY")
     stream = RealsenseStream()
     try:
-        streaming = Thread(target = stream.start_stream, args =(q1, q2, event), daemon=True)
-        streaming.start()
         Thread(target = stream_to_clients, args =(q1, q2, event), daemon=True).start()
 
-        Transport(sys.argv[1], lambda ws:sockets.append(ws), lambda ws:sockets.remove(ws))
+        streaming = Thread(target = stream.start_stream, args =(q1, q2, event), daemon=True)
+        streaming.start()
+
+        Transport(sys.argv[1], lambda ws:on_connect(ws), lambda ws:sockets.remove(ws))
         
     except Exception as er:
             print(er)
