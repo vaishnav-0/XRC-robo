@@ -7,11 +7,14 @@ const mobileCheck = function () {
     return check;
 };
 
+let moveSpeed = 20;
+let rotateSpeed = 60;
+
 const sendControl = async (motion: 'w' | 'a' | 's' | 'd' | 'br') => {
     if (motion === 'a' || motion === 'd') {
-        await fetch("/control?speed=80", { method: "GET" });
+        await fetch("/control?speed="+rotateSpeed, { method: "GET" });
     } else {
-        await fetch("/control?speed=20", { method: "GET" });
+        await fetch("/control?speed="+moveSpeed, { method: "GET" });
     }
     const res = fetch("/control?mov=" + motion, { method: "GET" });
     console.log("control sent")
@@ -59,6 +62,16 @@ if (mobileCheck()) {
     });
 }
 
+ document.getElementById("setMov")?.addEventListener("click", ()=>{
+    const v = (document.getElementById("movSpeed") as HTMLInputElement).value;
+    moveSpeed = v;
+ });
+
+  document.getElementById("setRot")?.addEventListener("click", ()=>{
+    const v = (document.getElementById("rotSpeed") as HTMLInputElement).value;
+    rotateSpeed = v;
+ });
+
 document.addEventListener("keydown", (event) => {
     if (!event.repeat) {
         if (event.key === "w") {
@@ -77,29 +90,50 @@ document.addEventListener("keyup", () => {
     sendControl('br');
 });
 
-
 const onMessage = async (data: Blob, f: boolean) => {
 
-    const imageArray = await data.arrayBuffer()
-    console.log(imageArray)
-    const image = new ImageData(new Uint8ClampedArray(imageArray), 640, 480)
+    const image = await createImageBitmap(data);
+
     if (image) {
         if (f) {
             if (!rgbCtx) return;
-            const imageData = rgbCtx.createImageData(image);
+
             rgbCtx.clearRect(0, 0, rgbCtx.canvas.width, rgbCtx.canvas.height);
-            rgbCtx.putImageData(imageData, 0, 0);
+            rgbCtx.drawImage(image, 0, 0, rgbCtx.canvas.width, rgbCtx.canvas.height);
 
         } else {
             if (!depthCtx) return;
-            const imageData = depthCtx.createImageData(image);
+
             depthCtx.clearRect(0, 0, depthCtx.canvas.width, depthCtx.canvas.height);
-            depthCtx.putImageData(imageData, 0, 0);
+            depthCtx.drawImage(image, 0, 0, depthCtx.canvas.width, depthCtx.canvas.height);
         }
 
     }
 
 }
+//
+// const onMessage = async (data: Blob, f: boolean) => {
+//
+//     const imageArray = await data.arrayBuffer()
+//     console.log(imageArray)
+//     const image = new ImageData(new Uint8ClampedArray(imageArray), 640, 480)
+//     if (image) {
+//         if (f) {
+//             if (!rgbCtx) return;
+//             const imageData = rgbCtx.createImageData(image);
+//             rgbCtx.clearRect(0, 0, rgbCtx.canvas.width, rgbCtx.canvas.height);
+//             rgbCtx.putImageData(imageData, 0, 0);
+//
+//         } else {
+//             if (!depthCtx) return;
+//             const imageData = depthCtx.createImageData(image);
+//             depthCtx.clearRect(0, 0, depthCtx.canvas.width, depthCtx.canvas.height);
+//             depthCtx.putImageData(imageData, 0, 0);
+//         }
+//
+//     }
+//
+// }
 
 const trans = new Transporter(onMessage);
 
