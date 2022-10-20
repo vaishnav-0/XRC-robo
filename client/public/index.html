@@ -4,43 +4,14 @@
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
     <link rel="stylesheet" href="style.css"/>
-    <title>Document</title>
+    <title>XRC-ROBO</title>
 
     <style>
-      .ui {
-        display: inline-flex;
-        font-family: sans-serif;
-        padding: 20px;
-      }
-
-      .ui p {
-        margin: 10px 30px 0 0;
-        font-weight: bold;
-      }
-
-      .ui button {
-        background-color: #f44336;
-        /* Red */
-        color: white;
-        padding: 10px 25px;
-        text-align: center;
-        display: inline-block;
-        font-size: 16px;
-        font-weight: bold;
-      }
-
-      .ui span {
-        font-size: 1.2rem;
-        padding: 5px;
-      }
-
-      .video {
-        padding: 0;
-        margin: 0;
-        border-style: solid;
-        border-width: thick;
-      }
+     
 
     </style>
 
@@ -48,27 +19,26 @@
 </head>
 
 <body>
-<div>
+    
+<div class="screen">
     <canvas
             id="rgbCanvas"
-            width="256px"
-            height="256px"
             class="video"
             style="border-color: magenta"
     ></canvas>
     <canvas
             id="depthCanvas"
-            width="256px"
-            height="256px"
             class="video"
             style="border-color: darkolivegreen"
     ></canvas>
 </div>
-<input type="number" value="20" max="100" id="movSpeed"/>
-<button id="setMov">Set movement speed</button>
-<input type="number" value="50" max="100" id="rotSpeed"/>
-<button id="setRot">Set rotation speed</button>
-<div class="control-grid">
+<div class="seter">
+  <div class="geter">
+    <span id="movSpeed">20</span>
+    <Input class="range" type="range" value="20" min="0" max="100" onChange="speedSlide(this.value)" onmousemove="speedSlide(this.value)"></Input>
+    <button class="button-86" role="button" id="setMov">Set movement speed</button>
+  </div>
+  <div class="control-grid">
     <div class="control-btn-w">
         <button id="btn-w">↑</button>
     </div>
@@ -81,7 +51,16 @@
     <div class="control-btn-d">
         <button id="btn-d">→</button>
     </div>
+  </div>
+  <div class="geter">
+    <span id="rotSpeed">50</span>
+    <Input class="range" type="range" value="50" min="0" max="100" onChange="rotationSlide(this.value)" onmousemove="rotationSlide(this.value)"></Input>
+    <button class="button-86" role="button" id="setRot">Set rotation speed</button>
+  </div>
 </div>
+
+
+
 <!--
 <div>
     <label for="fpsRange">FPS</label>
@@ -89,6 +68,16 @@
     <output>5</output>
 </div>
 -->
-<br/>
+    <div class="space stars1"></div>
+		<div class="space stars2"></div>
+		<div class="space stars3"></div>
+    <script type="text/javascript">
+      function speedSlide(value) {
+          document.getElementById('movSpeed').innerHTML = value;
+      }
+      function rotationSlide(value) {
+          document.getElementById('rotSpeed').innerHTML = value;
+      }
+    </script>
 </body>
 </html>
